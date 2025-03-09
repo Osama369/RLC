@@ -35,11 +35,143 @@ const Layout = () => {
     return results;
   };
 
-   // Handle Chakri Ring button click
+  // Function to get combinations of a certain length (for 4 figures Ring 24)
+  const getCombinations = (str, length) => {
+    if (length === 1) return str.split("");
+    if (length === str.length) return [str];
+
+    let combinations = [];
+    for (let i = 0; i < str.length; i++) {
+      let remaining = str.slice(0, i) + str.slice(i + 1);
+      let subCombinations = getCombinations(remaining, length - 1);
+      subCombinations.forEach(sub => combinations.push(str[i] + sub));
+    }
+    return combinations;
+  };
+
+    // Function to get all permutations of a string
+    const getPermutation = (str) => {
+      if (str.length === 1) return [str];
+  
+      return str.split("").flatMap((char, i) =>
+        getPermutation(str.slice(0, i) + str.slice(i + 1)).map(perm => char + perm)
+      );
+    };
+
+     // Function to generate ordered 3-digit permutations (actual function to get permutation)
+  const generateOrderedPermutations = (num, length =3) => {
+    let str = num.toString();
+    if (str.length !==4) {
+      console.log("plz enter a 4 digit number");
+          return [];
+    }
+    let combinations = getCombinations(str, length);
+    let allPermutations = combinations.flatMap(getPermutation);
+
+    return Array.from(new Set(allPermutations)).sort((a, b) => a[0].localeCompare(b[0]));
+  };
+
+
+     // genarte the 5 figure ring (60)
+  const generate5DigitPermutations = (num, length = 3) => {
+    let str = num.toString();
+    if (str.length !== 5) {
+      console.log("Please enter a 5-digit number.");
+      return [];
+    }
+  
+    let combinations = getCombinations(str, length);
+    let allPermutations = combinations.flatMap(getPermutation);
+  
+    return Array.from(new Set(allPermutations)).sort((a, b) => a[0].localeCompare(b[0]));
+  };
+
+   // genarte the 5 digit ring (120)
+   const generate6DigitPermutations = (num, length = 3) => {
+    let str = num.toString();
+    if (str.length !== 6) {
+      console.log("Please enter a 6-digit number.");
+      return [];
+    }
+  
+    let combinations = getCombinations(str, length);
+    let allPermutations = combinations.flatMap(getPermutation);
+  
+    return Array.from(new Set(allPermutations)).sort((a, b) => a[0].localeCompare(b[0]));
+  };
+
+  const  handle6FigureRing = ()=>{
+    if (no.length <6) {
+         console.log("plz enter the ast leat 6 digits");
+         return;
+    }
+
+     const result = generate6DigitPermutations(no, 3);
+     console.log(result);
+     
+
+     const updatedEntries = result.map((perm, index) => ({
+      id: index + 1,
+      no: perm,
+      f: f,  
+      s: s,  
+      selected: false,
+    }));
+
+    setEntries(updatedEntries);
+  }
+
+  const  handle5FiguresRing = ()=>{
+    if (no.length <5) {
+        console.log("plz enete the at least 5 digit");    
+        return;
+    } 
+           
+        const result = generate5DigitPermutations(no, 3);
+        console.log(result);
+         
+        const updatedEntries = result.map((perm, index) => ({
+          id: index + 1,
+          no: perm,
+          f: f,  
+          s: s,  
+          selected: false,
+        }));
+    
+        setEntries(updatedEntries);
+
+  }
+
+   // Handle button click
+   const handle4FiguresRing = () => {
+    if (no.length <4) {
+      console.log("Please enter at least a 4-digit number.");
+      return;
+    }
+    const result = generateOrderedPermutations(no, 3);
+    console.log("Generated Permutations:", result); // Logs result in console
+
+    //setPermutations(result); // Store the result in state
+
+    // Update entries state with new permutations
+    const updatedEntries = result.map((perm, index) => ({
+      id: index + 1,
+      no: perm,
+      f: f,  
+      s: s,  
+      selected: false,
+    }));
+    
+    
+    setEntries(updatedEntries);
+  };
+
+
+
+// Handle Chakri Ring button click
 const handleChakriRing = () => {
   if (no && f && s) {
     const generatedPermutations = getPermutations(no);
-
     // Update entries with permutations
     const updatedEntries = generatedPermutations.map((perm, index) => ({
       id: index + 1,
@@ -50,9 +182,79 @@ const handleChakriRing = () => {
     }));
 
     setEntries(updatedEntries);
+    // setNo(''),
+    // setF(''),
+    // setS('')
   }
 };
 
+// Handle Chakri Back Ring button click
+const handleChakriRingBack = () =>{
+   if (no &&  f && s) {
+       const generatedPermutations= getPermutations(no);
+       const updatedEntriesback =  generatedPermutations.map((perm , index)=>({
+        id: index+1,
+        no: `x${perm}`, // Ensure both are strings
+        f: f,
+        s:s,
+        selected:false
+       }));
+       setEntries(updatedEntriesback) ;
+      //  setNo(''),
+      //  setF(''),
+      //  setS('')
+      //  console.log(updatedEntriesback);
+       // set the fields empty
+      }     
+};
+
+// Handle Chakri Ring button click
+const handleChakriRingCross = () => {
+  if (no && f && s) {
+    const generatedPermutations = getPermutations(no);
+    const updatedEntriescross = generatedPermutations.map((perm, index) => {
+      const modifiedPerm = perm.slice(0, 1) + "x" + perm.slice(1); // Insert "x" at the second position
+
+      return {
+        id: index + 1,
+        no: modifiedPerm, 
+        f: f,
+        s: s,
+        selected: false
+      };
+    });
+
+    setEntries(updatedEntriescross);
+    // setNo('');
+    // setF('');
+    // setS('');
+    // console.log(updatedEntriescross);
+  }
+};
+
+// Handle Chakri Ring with double cross button click
+const handleChakriRingDouble = () => {
+  if (no && f && s) {
+    const generatedPermutations = getPermutations(no);
+    const updatedEntriesdouble = generatedPermutations.map((perm, index) => {
+      const modifiedPerm = perm.slice(0, 2) + "x" + perm.slice(2); // Insert "x" at the second position
+
+      return {
+        id: index + 1,
+        no: modifiedPerm, 
+        f: f,
+        s: s,
+        selected: false
+      };
+    });
+
+    setEntries(updatedEntriesdouble);
+    // setNo('');
+    // setF('');
+    // setS('');
+    // console.log(updatedEntriesdouble);
+  }
+};
 
 
   
@@ -64,63 +266,50 @@ const handleDownloadPDF = () => {
     return;
   }
 
-  const doc = new jsPDF("p","mm", "a4");   // Portrait mode, millimeters, A4 size
+  const doc = new jsPDF("p", "mm", "a4"); // Portrait mode, millimeters, A4 size
   const pageWidth = doc.internal.pageSize.width;
-  // Title
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("Voucher Sheet", pageWidth / 2, 15, { align: "center" });
+  const pageHeight = doc.internal.pageSize.height;
 
-  // Dealer Details
-  doc.setFontSize(12);
-  doc.text(`Dealer Name: Sohail`, 14, 30);
-  doc.text(`City: Karachi`, 14, 40);
-  doc.text(`Draw Date: ${drawDate}`, 14, 50);
-  doc.text(`Draw Time: ${drawTime}`, 14, 60);
-  
-   // Split entries into two halves
-   const middleIndex = Math.ceil(entries.length / 2);
-   const firstHalf = entries.slice(0, middleIndex);
-   const secondHalf = entries.slice(middleIndex);
+  // Title and Dealer Details (Only on first page)
+  const addHeader = () => {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Voucher Sheet", pageWidth / 2, 15, { align: "center" });
 
-   let startY = 70; // Initial Y position for tables
-
-
-   // Function to draw a table
-  const drawTable = (tableData, startX, title) => {
-    if (tableData.length > 0) {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.text(title, startX, startY - 5);
-
-      doc.autoTable({
-        startY: startY,
-        startX: startX,
-        head: [["Num", "F", "S"]],
-        body: tableData.map(entry => [entry.no, entry.f, entry.s]),
-        theme: "grid",
-        headStyles: { fillColor: [0, 0, 255] },
-        styles: { halign: "center" },
-        margin: { left: startX, right: 10 },
-      });
-
-      // Update Y position for next table
-      startY = doc.autoTable.previous.finalY + 10;
-    }
+    doc.setFontSize(12);
+    doc.text(`Dealer Name: Sohail`, 14, 30);
+    doc.text(`City: Karachi`, 14, 40);
+    doc.text(`Draw Date: ${drawDate}`, 14, 50);
+    doc.text(`Draw Time: ${drawTime}`, 14, 60);
   };
 
-  // Check if we can fit tables side by side (only if enough space)
-  if (entries.length > 10) {
-    drawTable(firstHalf, 14, "1st table");
-    drawTable(secondHalf, pageWidth / 2, "2nd table");
-  } else {
-    // Draw in a single column if less data
-    drawTable(firstHalf, 14, "Table");
-  }
+  addHeader(); // Add header to the first page
+
+  let startY = 70; // Start table below details
+
+  doc.autoTable({
+    startY: startY,
+    head: [["Num", "F", "S"]],
+    body: entries.map(entry => [entry.no, entry.f, entry.s]),
+    theme: "grid",
+    headStyles: { fillColor: [0, 0, 255] },
+    styles: { align: "center", fontSize: 12 },
+    margin: { left: 14 },
+    didDrawPage: function (data) {
+      if (data.pageNumber > 1) {
+        addHeader(); // Add header on new pages
+        doc.setFontSize(14);
+        doc.text("Continued...", pageWidth / 2, 65, { align: "center" });
+      }
+    },
+  });
 
   // Save PDF
-  doc.save("Voucher_Sheet.pdf");
+  doc.save("Voucher_Sheet_RLC.pdf");
 };
+
+
+
 
 
   // Update current time every minute
@@ -303,9 +492,11 @@ const handleDownloadPDF = () => {
               </button>
               <button onClick={deleteSelected} className='bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500'>Delete Selected</button>
               <button onClick={deleteAll} className='bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500'>Delete All</button>
+              {/* <span>count table entreis </span> */}
             </div>
        {/* // displaying in the tabke  */}
             <div className='max-h-60 border rounded-md overflow-y-auto'>
+              
               <table className='w-full border-collapse'>
                 <thead>
                   <tr className='bg-gray-200'>
@@ -314,7 +505,11 @@ const handleDownloadPDF = () => {
                     <th className='border p-2'>F</th>
                     <th className='border p-2'>S</th>
                     <th className='border p-2'>Actions</th>
+                    
                   </tr>
+                  <div className='flex justify-center'>
+                  <span className='text-2xl'>{`(${entries.length})`}</span>
+                  </div>
                 </thead>
                 <tbody>
                   {entries.map(entry => (
@@ -386,24 +581,22 @@ const handleDownloadPDF = () => {
               <div className="w-1/2">
                 <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2" onClick={handleChakriRing}>Chakri Ring</button>
                
-                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">Back Ring</button>
-                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">Cross Ring</button>
-                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">Packet</button>
+                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2" onClick={handleChakriRingBack}>Back Ring</button>
+                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2" onClick={handleChakriRingCross}>Cross Ring</button>
+                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2" onClick={handleChakriRingDouble}>Double Cross</button>
                 <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">Palty Akra</button>
                 <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">Figure Akra</button>
               </div>
-
+ 
               {/* Right Column */}
               <div className="w-1/2">
+                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2" onClick={handle4FiguresRing}>4 Figure Ring</button>
+                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2" onClick={handle5FiguresRing}>5 Figure Ring</button>
+                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2" onClick={handle6FigureRing}>6 Figure Ring</button>
                 <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">Ring + Akra</button>
-                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">4 Figure</button>
-                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">5 Figure</button>
-                <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">6 Figure</button>
                 <button className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 m-2">11 Figure</button>
               </div>
             </div>
-
-
 
           </div>
 

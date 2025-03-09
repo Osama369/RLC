@@ -5,6 +5,7 @@ import Homepage from './pages/Homepage';
 import Login from './pages/login';
 import Register from './pages/register';
 
+// this is the routing setup 
 function App() {
   return (
     <BrowserRouter>
@@ -12,7 +13,7 @@ function App() {
         <Route path="/" element={<Homepage />} />
          <Route path='login' element={<Login/>}></Route>
          <Route path='register' element={<Register/>}></Route>
-        {/* <Route path="/temp" element={<Vouchersheet/>}></Route> */}
+        
       </Routes>
     </BrowserRouter>
   );
